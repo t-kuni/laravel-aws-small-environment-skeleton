@@ -1,0 +1,388 @@
+[
+    {
+        "name": "app",
+        "hostname": "app",
+        "image": "XXXX",
+        "essential": true,
+        "links": ["kvs:kvs"],
+        "mountPoints": [
+            {
+                "containerPath": "/var/www/app/storage",
+                "sourceVolume": "storage"
+            }
+        ],
+        "extraHosts": [
+            {
+                "hostname": "db",
+                "ipAddress": "${db_private_ip}"
+            }
+        ],
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-region": "ap-northeast-1",
+                "awslogs-stream-prefix": "app",
+                "awslogs-group": "/${project_name}/app"
+            }
+        },
+        "secrets": [
+            {
+                "name": "APP_NAME",
+                "valueFrom": "/${project_name}_app/APP_NAME"
+            },
+            {
+                "name": "APP_ENV",
+                "valueFrom": "/${project_name}_app/APP_ENV"
+            },
+            {
+                "name": "APP_KEY",
+                "valueFrom": "/${project_name}_app/APP_KEY"
+            },
+            {
+                "name": "APP_DEBUG",
+                "valueFrom": "/${project_name}_app/APP_DEBUG"
+            },
+            {
+                "name": "APP_URL",
+                "valueFrom": "/${project_name}_app/APP_URL"
+            },
+            {
+                "name": "LOG_CHANNEL",
+                "valueFrom": "/${project_name}_app/LOG_CHANNEL"
+            },
+            {
+                "name": "LOG_LEVEL",
+                "valueFrom": "/${project_name}_app/LOG_LEVEL"
+            },
+            {
+                "name": "DB_CONNECTION",
+                "valueFrom": "/${project_name}_app/DB_CONNECTION"
+            },
+            {
+                "name": "DB_HOST",
+                "valueFrom": "/${project_name}_app/DB_HOST"
+            },
+            {
+                "name": "DB_PORT",
+                "valueFrom": "/${project_name}_app/DB_PORT"
+            },
+            {
+                "name": "DB_DATABASE",
+                "valueFrom": "/${project_name}_app/DB_DATABASE"
+            },
+            {
+                "name": "DB_USERNAME",
+                "valueFrom": "/${project_name}_app/DB_USERNAME"
+            },
+            {
+                "name": "DB_PASSWORD",
+                "valueFrom": "/${project_name}_app/DB_PASSWORD"
+            },
+            {
+                "name": "BROADCAST_DRIVER",
+                "valueFrom": "/${project_name}_app/BROADCAST_DRIVER"
+            },
+            {
+                "name": "CACHE_DRIVER",
+                "valueFrom": "/${project_name}_app/CACHE_DRIVER"
+            },
+            {
+                "name": "FILESYSTEM_DRIVER",
+                "valueFrom": "/${project_name}_app/FILESYSTEM_DRIVER"
+            },
+            {
+                "name": "QUEUE_CONNECTION",
+                "valueFrom": "/${project_name}_app/QUEUE_CONNECTION"
+            },
+            {
+                "name": "SESSION_DRIVER",
+                "valueFrom": "/${project_name}_app/SESSION_DRIVER"
+            },
+            {
+                "name": "SESSION_LIFETIME",
+                "valueFrom": "/${project_name}_app/SESSION_LIFETIME"
+            },
+            {
+                "name": "MEMCACHED_HOST",
+                "valueFrom": "/${project_name}_app/MEMCACHED_HOST"
+            },
+            {
+                "name": "REDIS_HOST",
+                "valueFrom": "/${project_name}_app/REDIS_HOST"
+            },
+            {
+                "name": "REDIS_PASSWORD",
+                "valueFrom": "/${project_name}_app/REDIS_PASSWORD"
+            },
+            {
+                "name": "REDIS_PORT",
+                "valueFrom": "/${project_name}_app/REDIS_PORT"
+            },
+            {
+                "name": "MAIL_MAILER",
+                "valueFrom": "/${project_name}_app/MAIL_MAILER"
+            },
+            {
+                "name": "MAIL_HOST",
+                "valueFrom": "/${project_name}_app/MAIL_HOST"
+            },
+            {
+                "name": "MAIL_PORT",
+                "valueFrom": "/${project_name}_app/MAIL_PORT"
+            },
+            {
+                "name": "MAIL_USERNAME",
+                "valueFrom": "/${project_name}_app/MAIL_USERNAME"
+            },
+            {
+                "name": "MAIL_PASSWORD",
+                "valueFrom": "/${project_name}_app/MAIL_PASSWORD"
+            },
+            {
+                "name": "MAIL_ENCRYPTION",
+                "valueFrom": "/${project_name}_app/MAIL_ENCRYPTION"
+            },
+            {
+                "name": "MAIL_FROM_ADDRESS",
+                "valueFrom": "/${project_name}_app/MAIL_FROM_ADDRESS"
+            },
+            {
+                "name": "MAIL_FROM_NAME",
+                "valueFrom": "/${project_name}_app/MAIL_FROM_NAME"
+            },
+            {
+                "name": "AWS_ACCESS_KEY_ID",
+                "valueFrom": "/${project_name}_app/AWS_ACCESS_KEY_ID"
+            },
+            {
+                "name": "AWS_SECRET_ACCESS_KEY",
+                "valueFrom": "/${project_name}_app/AWS_SECRET_ACCESS_KEY"
+            },
+            {
+                "name": "AWS_DEFAULT_REGION",
+                "valueFrom": "/${project_name}_app/AWS_DEFAULT_REGION"
+            },
+            {
+                "name": "AWS_BUCKET",
+                "valueFrom": "/${project_name}_app/AWS_BUCKET"
+            }
+        ]
+    },
+    {
+        "name": "web",
+        "hostname": "web",
+        "image": "XXXX",
+        "essential": true,
+        "links": ["app:app", "scheduler:scheduler"],
+        "portMappings": [
+            {
+                "containerPort": 80,
+                "hostPort": 80
+            },
+            {
+                "containerPort": 443,
+                "hostPort": 443
+            }
+        ],
+        "dependsOn": [
+            {
+                "containerName": "app",
+                "condition": "START"
+            }
+        ],
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-region": "ap-northeast-1",
+                "awslogs-stream-prefix": "web",
+                "awslogs-group": "/${project_name}/web"
+            }
+        },
+        "secrets": [
+        ]
+    },
+    {
+        "name": "scheduler",
+        "hostname": "scheduler",
+        "image": "XXXX",
+        "essential": true,
+        "links": ["kvs:kvs"],
+        "command": ["/start-crond.sh"],
+        "mountPoints": [
+            {
+                "containerPath": "/var/www/app/storage",
+                "sourceVolume": "storage"
+            }
+        ],
+        "extraHosts": [
+            {
+                "hostname": "db",
+                "ipAddress": "${db_private_ip}"
+            }
+        ],
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-region": "ap-northeast-1",
+                "awslogs-stream-prefix": "scheduler",
+                "awslogs-group": "/${project_name}/scheduler"
+            }
+        },
+        "secrets": [
+            {
+                "name": "APP_NAME",
+                "valueFrom": "/${project_name}_app/APP_NAME"
+            },
+            {
+                "name": "APP_ENV",
+                "valueFrom": "/${project_name}_app/APP_ENV"
+            },
+            {
+                "name": "APP_KEY",
+                "valueFrom": "/${project_name}_app/APP_KEY"
+            },
+            {
+                "name": "APP_DEBUG",
+                "valueFrom": "/${project_name}_app/APP_DEBUG"
+            },
+            {
+                "name": "APP_URL",
+                "valueFrom": "/${project_name}_app/APP_URL"
+            },
+            {
+                "name": "LOG_CHANNEL",
+                "valueFrom": "/${project_name}_app/LOG_CHANNEL"
+            },
+            {
+                "name": "LOG_LEVEL",
+                "valueFrom": "/${project_name}_app/LOG_LEVEL"
+            },
+            {
+                "name": "DB_CONNECTION",
+                "valueFrom": "/${project_name}_app/DB_CONNECTION"
+            },
+            {
+                "name": "DB_HOST",
+                "valueFrom": "/${project_name}_app/DB_HOST"
+            },
+            {
+                "name": "DB_PORT",
+                "valueFrom": "/${project_name}_app/DB_PORT"
+            },
+            {
+                "name": "DB_DATABASE",
+                "valueFrom": "/${project_name}_app/DB_DATABASE"
+            },
+            {
+                "name": "DB_USERNAME",
+                "valueFrom": "/${project_name}_app/DB_USERNAME"
+            },
+            {
+                "name": "DB_PASSWORD",
+                "valueFrom": "/${project_name}_app/DB_PASSWORD"
+            },
+            {
+                "name": "BROADCAST_DRIVER",
+                "valueFrom": "/${project_name}_app/BROADCAST_DRIVER"
+            },
+            {
+                "name": "CACHE_DRIVER",
+                "valueFrom": "/${project_name}_app/CACHE_DRIVER"
+            },
+            {
+                "name": "FILESYSTEM_DRIVER",
+                "valueFrom": "/${project_name}_app/FILESYSTEM_DRIVER"
+            },
+            {
+                "name": "QUEUE_CONNECTION",
+                "valueFrom": "/${project_name}_app/QUEUE_CONNECTION"
+            },
+            {
+                "name": "SESSION_DRIVER",
+                "valueFrom": "/${project_name}_app/SESSION_DRIVER"
+            },
+            {
+                "name": "SESSION_LIFETIME",
+                "valueFrom": "/${project_name}_app/SESSION_LIFETIME"
+            },
+            {
+                "name": "MEMCACHED_HOST",
+                "valueFrom": "/${project_name}_app/MEMCACHED_HOST"
+            },
+            {
+                "name": "REDIS_HOST",
+                "valueFrom": "/${project_name}_app/REDIS_HOST"
+            },
+            {
+                "name": "REDIS_PASSWORD",
+                "valueFrom": "/${project_name}_app/REDIS_PASSWORD"
+            },
+            {
+                "name": "REDIS_PORT",
+                "valueFrom": "/${project_name}_app/REDIS_PORT"
+            },
+            {
+                "name": "MAIL_MAILER",
+                "valueFrom": "/${project_name}_app/MAIL_MAILER"
+            },
+            {
+                "name": "MAIL_HOST",
+                "valueFrom": "/${project_name}_app/MAIL_HOST"
+            },
+            {
+                "name": "MAIL_PORT",
+                "valueFrom": "/${project_name}_app/MAIL_PORT"
+            },
+            {
+                "name": "MAIL_USERNAME",
+                "valueFrom": "/${project_name}_app/MAIL_USERNAME"
+            },
+            {
+                "name": "MAIL_PASSWORD",
+                "valueFrom": "/${project_name}_app/MAIL_PASSWORD"
+            },
+            {
+                "name": "MAIL_ENCRYPTION",
+                "valueFrom": "/${project_name}_app/MAIL_ENCRYPTION"
+            },
+            {
+                "name": "MAIL_FROM_ADDRESS",
+                "valueFrom": "/${project_name}_app/MAIL_FROM_ADDRESS"
+            },
+            {
+                "name": "MAIL_FROM_NAME",
+                "valueFrom": "/${project_name}_app/MAIL_FROM_NAME"
+            },
+            {
+                "name": "AWS_ACCESS_KEY_ID",
+                "valueFrom": "/${project_name}_app/AWS_ACCESS_KEY_ID"
+            },
+            {
+                "name": "AWS_SECRET_ACCESS_KEY",
+                "valueFrom": "/${project_name}_app/AWS_SECRET_ACCESS_KEY"
+            },
+            {
+                "name": "AWS_DEFAULT_REGION",
+                "valueFrom": "/${project_name}_app/AWS_DEFAULT_REGION"
+            },
+            {
+                "name": "AWS_BUCKET",
+                "valueFrom": "/${project_name}_app/AWS_BUCKET"
+            }
+        ]
+    },
+    {
+        "name": "kvs",
+        "hostname": "kvs",
+        "image": "XXXX",
+        "essential": true,
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-region": "ap-northeast-1",
+                "awslogs-stream-prefix": "kvs",
+                "awslogs-group": "/${project_name}/kvs"
+            }
+        }
+    }
+]

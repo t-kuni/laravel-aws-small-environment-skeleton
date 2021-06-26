@@ -1,0 +1,37 @@
+[
+    {
+        "name": "${project_name}_db_backuper",
+        "image": "XXXX",
+        "essential": true,
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-region": "ap-northeast-1",
+                "awslogs-stream-prefix": "db_backuper",
+                "awslogs-group": "/${project_name}/db_backuper"
+            }
+        },
+        "secrets": [
+            {
+                "name": "DB_BACKUP_BUCKET_NAME",
+                "valueFrom": "/${project_name}_db_backuper/DB_BACKUP_BUCKET_NAME"
+            },
+            {
+                "name": "DB_HOST",
+                "valueFrom": "/${project_name}_db_backuper/DB_HOST"
+            },
+            {
+                "name": "DB_USERNAME",
+                "valueFrom": "/${project_name}_db_backuper/DB_USERNAME"
+            },
+            {
+                "name": "DB_PASSWORD",
+                "valueFrom": "/${project_name}_db/MYSQL_ROOT_PASSWORD"
+            },
+            {
+                "name": "DB_DATABASE",
+                "valueFrom": "/${project_name}_app/DB_DATABASE"
+            }
+        ]
+    }
+]

@@ -1,0 +1,33 @@
+[
+    {
+        "name": "${project_name}_db",
+        "image": "XXXX",
+        "essential": true,
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-region": "ap-northeast-1",
+                "awslogs-stream-prefix": "db",
+                "awslogs-group": "/${project_name}/db"
+            }
+        },
+        "mountPoints": [
+            {
+                "containerPath" : "/var/lib/mysql",
+                "sourceVolume" : "db-data"
+            }
+        ],
+        "portMappings": [
+            {
+                "containerPort": 3306,
+                "hostPort": 3306
+            }
+        ],
+        "secrets": [
+            {
+                "name": "MYSQL_ROOT_PASSWORD",
+                "valueFrom": "/${project_name}_db/MYSQL_ROOT_PASSWORD"
+            }
+        ]
+    }
+]

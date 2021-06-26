@@ -1,0 +1,10 @@
+.idea
+
+# terraform
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+.terraform/
+*.bak
+*gitignore*.tf
+terraform.tfvars
